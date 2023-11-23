@@ -3,7 +3,6 @@
 
 # In[ ]:
 
-
 import dash
 from dash import dcc
 from dash import html
@@ -32,10 +31,19 @@ app.layout = html.Div(children=[
     html.Div([
         html.Label("Select Statistics:"),
         dcc.Dropdown(
+            id='select-statistics',
+            options=dropdown_options,
+            value='Yearly Statistics',
+            placeholder='Select a report type',
+        )
+    ]),
+    html.Div([
+        dcc.Dropdown(
             id='select-year',
             options=[{'label': i, 'value': i} for i in year_list],
-            value='Select Statistics',
-            placeholder='Select a report type',
+            value='Select Year',
+            placeholder='Select a year',
+            style={'display': 'none'}
         )
     ]),
     html.Div([
@@ -45,20 +53,20 @@ app.layout = html.Div(children=[
 
 # Define the callback function to update the input container based on the selected statistics
 @app.callback(
-    Output(component_id='select-year', component_property='disabled'),
-    Input(component_id='dropdown-statistics', component_property='value')
+    Output(component_id='select-year', component_property='style'),
+    Input(component_id='select-statistics', component_property='value')
 )
 def update_input_container(selected_stat):
     if selected_stat == 'Yearly Statistics':
-        return False
+        return {'display': 'none'}
     else:
-        return True
+        return {'display': 'block'}
 
 # Callback for plotting
 @app.callback(
     Output(component_id='output-container', component_property='children'),
-    [Input(component_id='select-year', component_property='value'),
-     Input(component_id='dropdown-statistics', component_property='value')]
+    [Input(component_id='select-statistics', component_property='value'),
+     Input(component_id='select-year', component_property='value')]
 )
 def update_output_container(selected_statistics, input_year):
     if selected_statistics == 'Recession Period Statistics':
@@ -147,4 +155,4 @@ def update_output_container(selected_statistics, input_year):
 
 # Run the Dash app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(port=8052)
